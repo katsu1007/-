@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>ぷろろん｜リフォーム見積もり</title>
+<style>
+:root{
+  --bg:#f4f6f8;
+  --card:#ffffff;
+  --main:#0f62fe;
+  --main-dark:#0043ce;
+  --ok:#0e8345;
+  --warn:#b28600;
+  --danger:#c62828;
+  --text:#111827;
+  --muted:#5b6472;
+  --line:#d9dee5;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  padding-bottom:96px;
+}
+header{
+  position:sticky;top:0;z-index:50;
+  background:#fff;border-bottom:1px solid var(--line);
+  padding:12px 16px 10px;
+}
+.app-title{
+  font-size:20px;font-weight:800;letter-spacing:.5px;
+}
+.app-sub{
+  font-size:12px;color:var(--muted);margin-top:2px;
+}
+.save-state{
+  margin-top:6px;font-size:12px;color:var(--ok);font-weight:700;
+}
+.save-state.unsaved{color:var(--danger)}
+nav{
+  display:flex;gap:6px;overflow-x:auto;padding:10px 12px 2px;
+  scrollbar-width:none;
+}
+nav::-webkit-scrollbar{display:none}
+.tab{
+  flex:0 0 auto;
+  border:1px solid var(--line);
+  background:#fff;color:var(--muted);
+  border-radius:999px;padding:9px 14px;
+  font-size:14px;font-weight:700;white-space:nowrap;
+}
+.tab.active{
+  background:var(--main);border-color:var(--main);color:#fff;
+}
+main{padding:12px 12px 20px}
+.card{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:14px;
+  margin-bottom:12px;
+  box-shadow:0 1px 3px rgba(16,24,40,.06);
+}
+.card h2{
+  margin:0 0 10px;font-size:17px;font-weight:800;
+}
+.card h3{
+  margin:14px 0 8px;font-size:15px;font-weight:800;
+}
+.small{font-size:12px;color:var(--muted)}
+.row{display:flex;gap:8px;align-items:center}
+.row.wrap{flex-wrap:wrap}
+.grow{flex:1}
+input,select,textarea{
+  width:100%;
+  border:1.5px solid var(--line);
+  border-radius:10px;
+  padding:12px;
+  font-size:16px;
+  background:#fff;
+  color:var(--text);
+}
+input:focus,select:focus,textarea:focus{
+  outline:none;border-color:var(--main);
+}
+label{
+  display:block;font-size:12px;font-weight:700;color:var(--muted);
+  margin:8px 0 4px;
+}
+button{
+  border:0;border-radius:12px;
+  padding:14px 16px;
+  font-size:16px;font-weight:800;
+  cursor:pointer;
+  min-height:48px;
+}
+.btn{
+  background:#eef2f7;color:var(--text);
+}
+.btn.primary{background:var(--main);color:#fff}
+.btn.danger{background:#fdecec;color:var(--danger)}
+.btn.small{padding:10px 12px;font-size:14px;min-height:42px}
+.btn.block{width:100%}
+.btn:active{opacity:.75}
+.total-box{
+  background:#eaf1ff;border:1px solid #c8dcff;
+  border-radius:14px;padding:14px;margin-bottom:12px;
+}
+.total-label{font-size:12px;font-weight:800;color:var(--main-dark)}
+.total-value{
+  font-size:30px;font-weight:900;color:var(--main-dark);
+  margin-top:2px;
+}
+.total-meta{font-size:12px;color:var(--muted);margin-top:4px}
+.project-card{
+  background:#fff;border:1px solid var(--line);
+  border-radius:14px;padding:14px;margin-bottom:10px;
+  box-shadow:0 1px 3px rgba(16,24,40,.06);
+}
+.project-card.active{
+  border-color:var(--main);
+  box-shadow:0 0 0 3px rgba(15,98,254,.14);
+}
+.project-name{font-size:17px;font-weight:800}
+.project-meta{font-size:12px;color:var(--muted);margin-top:4px}
+.project-actions{display:flex;gap:8px;margin-top:10px}
+.room-card{
+  border:1px solid var(--line);border-radius:14px;
+  padding:12px;margin-bottom:10px;background:#fff;
+}
+.room-title{font-size:16px;font-weight:800}
+.qty-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px;
+}
+.qty-box{
+  background:#f6f8fb;border:1px solid var(--line);
+  border-radius:10px;padding:10px;text-align:center;
+}
+.qty-label{font-size:11px;color:var(--muted);font-weight:700}
+.qty-value{font-size:16px;font-weight:800;margin-top:2px}
+.item-card{
+  border:1px solid var(--line);border-radius:14px;
+  background:#fff;padding:12px;margin-bottom:10px;
+}
+.item-card.editing{
+  border-color:var(--main);
+  box-shadow:0 0 0 3px rgba(15,98,254,.12);
+}
+.item-top{
+  display:flex;justify-content:space-between;gap:8px;align-items:flex-start;
+}
+.item-name{font-size:16px;font-weight:800}
+.item-price{font-size:17px;font-weight:900;color:var(--main-dark)}
+.item-meta{font-size:12px;color:var(--muted);margin-top:4px}
+.tag{
+  display:inline-block;padding:3px 8px;border-radius:999px;
+  font-size:11px;font-weight:800;margin-right:5px;
+}
+.tag.demolition{background:#fdecec;color:var(--danger)}
+.tag.base{background:#fff4d6;color:#8a6100}
+.tag.finish{background:#e6f5ec;color:var(--ok)}
+.tag.electric{background:#eaf1ff;color:var(--main-dark)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.actions{display:flex;gap:8px;margin-top:10px}
+.actions button{flex:1}
+.empty{
+  text-align:center;color:var(--muted);
+  padding:24px 10px;font-size:14px;
+}
+.bottom-bar{
+  position:fixed;left:0;right:0;bottom:0;z-index:60;
+  background:#fff;border-top:1px solid var(--line);
+  padding:10px 12px calc(10px + env(safe-area-inset-bottom));
+  display:flex;gap:8px;
+}
+.bottom-bar button{flex:1}
+.modal-back{
+  position:fixed;inset:0;background:rgba(17,24,39,.45);
+  z-index:100;display:none;align-items:flex-end;
+}
+.modal-back.show{display:flex}
+.modal{
+  background:#fff;width:100%;
+  border-radius:18px 18px 0 0;
+  padding:16px;
+  max-height:88vh;overflow:auto;
+}
+.modal h2{margin:0 0 12px;font-size:18px}
+.file-label{
+  display:block;border:2px dashed var(--line);
+  border-radius:12px;padding:18px;text-align:center;
+  font-weight:800;color:var(--muted);background:#fafbfc;
+}
+canvas{
+  width:100%;border:1px solid var(--line);
+  border-radius:10px;background:#fff;touch-action:none;
+}
+.badge{
+  display:inline-block;background:#eaf1ff;color:var(--main-dark);
+  font-size:11px;font-weight:800;border-radius:999px;padding:3px 8px;
+}
+.warn-box{
+  background:#fff8e1;border:1px solid #ffe082;
+  color:#7a5c00;border-radius:10px;padding:10px;font-size:13px;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="app-title">ぷろろん</div>
+  <div class="app-sub">現場調査・見積もり・PDF出力</div>
+  <div id="saveState" class="save-state">保存済み</div>
+  <nav>
+    <button class="tab active" data-view="projects">案件一覧</button>
+    <button class="tab" data-view="overview">概要・数量</button>
+    <button class="tab" data-view="estimate">見積明細</button>
+    <button class="tab" data-view="drawing">図面</button>
+    <button class="tab" data-view="settings">案件設定</button>
+  </nav>
+</header>
+
+<main>
+  <!-- 案件一覧 -->
+  <section id="view-projects">
+    <div class="card">
+      <h2>案件を追加</h2>
+      <label>現場名</label>
+      <input id="newProjectName" placeholder="例：〇〇様邸 リフォーム">
+      <label>住所</label>
+      <input id="newProjectAddress" placeholder="例：福岡市博多区">
+      <button class="btn primary block" onclick="addProject()">案件を作成</button>
+    </div>
+    <div id="projectList"></div>
+  </section>
+
+  <!-- 概要・数量 -->
+  <section id="view-overview" style="display:none">
+    <div class="total-box">
+      <div class="total-label">見積合計</div>
+      <div class="total-value" id="overviewTotal">¥0</div>
+      <div class="total-meta" id="overviewMeta">税抜表示・明細0件</div>
+    </div>
+
+    <div class="card">
+      <h2>部屋を追加</h2>
+      <label>部屋名</label>
+      <input id="newRoomName" placeholder="例：洋室・キッチン・洗面室">
+      <button class="btn primary block" onclick="addRoom()">部屋を追加</button>
+    </div>
+
+    <div id="roomList"></div>
+  </section>
+
+  <!-- 見積明細 -->
+  <section id="view-estimate" style="display:none">
+    <div class="total-box">
+      <div class="total-label">見積合計</div>
+      <div class="total-value" id="estimateTotal">¥0</div>
+      <div class="total-meta" id="estimateMeta">税抜表示・明細0件</div>
+    </div>
+
+    <div class="card">
+      <h2>工事内容を追加</h2>
+      <label>部屋</label>
+      <select id="itemRoom"></select>
+      <label>工事種別</label>
+      <select id="itemCategory">
+        <option value="demolition">解体</option>
+        <option value="base">下地</option>
+        <option value="finish">仕上げ</option>
+        <option value="electric">電気器具</option>
+      </select>
+      <label>項目名</label>
+      <input id="itemName" placeholder="例：クロス貼り替え">
+      <label>数量</label>
+      <input id="itemQty" type="number" inputmode="decimal" value="1">
+      <label>単価</label>
+      <input id="itemPrice" type="number" inputmode="numeric" value="0">
+      <label>単位</label>
+      <select id="itemUnit">
+        <option>式</option>
+        <option>㎡</option>
+        <option>m</option>
+        <option>本</option>
+        <option>箇所</option>
+      </select>
+      <button class="btn primary block" onclick="addItem()">明細を追加</button>
+    </div>
+
+    <div id="itemList"></div>
+  </section>
+
+  <!-- 図面 -->
+  <section id="view-drawing" style="display:none">
+    <div class="card">
+      <h2>JWW図面を読み込む</h2>
+      <div class="warn-box">
+        JWW読み込みは、まず「部屋・壁・電気器具」の候補を抽出します。<br>
+        読み込み後は、部屋の追加・削除や器具の配置修正ができます。
+      </div>
+      <label style="margin-top:12px">JWWファイル</label>
+      <label class="file-label" for="jwwFile">JWWファイルを選択</label>
+      <input id="jwwFile" type="file" accept=".jww,.jwf,.dxf" style="display:none" onchange="loadDrawing(event)">
+      <div id="drawingStatus" class="small" style="margin-top:8px">未読み込み</div>
+    </div>
+
+    <div class="card">
+      <h2>図面プレビュー</h2>
+      <canvas id="drawingCanvas" width="800" height="600"></canvas>
+      <div class="row wrap" style="margin-top:10px">
+        <button class="btn small" onclick="setDrawMode('measure')">長さ計測</button>
+        <button class="btn small" onclick="setDrawMode('demolition')">壁解体</button>
+        <button class="btn small" onclick="setDrawMode('cutter')">土間カッター</button>
+        <button class="btn small" onclick="setDrawMode('electric')">電気器具</button>
+        <button class="btn small" onclick="clearDrawing()">図面クリア</button>
+      </div>
+      <div class="small" id="drawModeText" style="margin-top:8px">現在のモード：なし</div>
+    </div>
+
+    <div class="card">
+      <h2>計測・配置</h2>
+      <div class="small">図面をタップして始点と終点を指定すると、長さを計測できます。</div>
+      <div id="measureResult" class="small" style="margin-top:8px">計測なし</div>
+    </div>
+  </section>
+
+  <!-- 案件設定 -->
+  <section id="view-settings" style="display:none">
+    <div class="card">
+      <h2>見積設定</h2>
+      <label>消費税率（%）</label>
+      <input id="taxRate" type="number" inputmode="decimal" value="10">
+      <label>仕入れ掛け率（%）</label>
+      <input id="markupRate" type="number" inputmode="decimal" value="30">
+      <label>備考</label>
+      <textarea id="projectNote" rows="3" placeholder="現場条件・注意事項などを記入"></textarea>
+      <button class="btn primary block" onclick="saveSettings()">設定を保存</button>
+    </div>
+
+    <div class="card">
+      <h2>収支確認</h2>
+      <div class="grid3">
+        <div class="qty-box">
+          <div class="qty-label">売上</div>
+          <div class="qty-value" id="salesAmount">¥0</div>
+        </div>
+        <div class="qty-box">
+          <div class="qty-label">原価</div>
+          <div class="qty-value" id="costAmount">¥0</div>
+        </div>
+        <div class="qty-box">
+          <div class="qty-label">粗利</div>
+          <div class="qty-value" id="profitAmount">¥0</div>
+        </div>
+      </div>
+      <div class="small" style="margin-top:8px">
+        原価＝売上 ÷（1＋掛け率）で概算表示します。
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>出力</h2>
+      <button class="btn primary block" onclick="exportPDF()">見積書PDFを作成</button>
+      <button class="btn block" style="margin-top:8px" onclick="exportCSV()">見積明細CSVを書き出す</button>
+    </div>
+  </section>
+</main>
+
+<div class="bottom-bar">
+  <button class="btn" onclick="switchView('projects')">案件</button>
+  <button class="btn" onclick="switchView('overview')">数量</button>
+  <button class="btn primary" onclick="switchView('estimate')">見積</button>
+  <button class="btn" onclick="switchView('drawing')">図面</button>
+</div>
+
+<div class="modal-back" id="modalBack">
+  <div class="modal">
+    <h2 id="modalTitle">確認</h2>
+    <div id="modalBody" class="small"></div>
+    <div class="actions" style="margin-top:14px">
+      <button class="btn" onclick="closeModal()">キャンセル</button>
+      <button class="btn danger" id="modalOk">実行する</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let projects = JSON.parse(localStorage.getItem('puroren_projects') || '[]');
+let currentProjectId = localStorage.getItem('puroren_current') || null;
+let drawingImage = null;
+let drawMode = 'none';
+let measurePoints = [];
+
+function save(){
+  localStorage.setItem('puroren_projects', JSON.stringify(projects));
+  localStorage.setItem('puroren_current', currentProjectId || '');
+  const el = document.getElementById('saveState');
+  const now = new Date();
+  const time = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
+  el.textContent = '自動保存 ' + time;
+  el.classList.remove('unsaved');
+}
+
+function currentProject(){
+  return projects.find(p => p.id === currentProjectId);
+}
+
+function money(n){
+  return '¥' + Math.round(n).toLocaleString('ja-JP');
+}
+
+function switchView(view){
+  document.querySelectorAll('.tab').forEach(t=>{
+    t.classList.toggle('active', t.dataset.view === view);
+  });
+  ['projects','overview','estimate','drawing','settings'].forEach(v=>{
+    document.getElementById('view-' + v).style.display = v === view ? 'block' : 'none';
+  });
+  render();
+}
+
+/* 案件 */
+function addProject(){
+  const name = document.getElementById('newProjectName').value.trim();
+  const address = document.getElementById('newProjectAddress').value.trim();
+  if(!name){ alert('現場名を入力してください'); return; }
+  const p = {
+    id: 'p' + Date.now(),
+    name,
+    address,
+    created: new Date().toLocaleString('ja-JP'),
+    updated: new Date().toLocaleString('ja-JP'),
+    rooms: [],
+    items: [],
+    taxRate: 10,
+    markupRate: 30,
+    note: ''
+  };
+  projects.unshift(p);
+  currentProjectId = p.id;
+  document.getElementById('newProjectName').value = '';
+  document.getElementById('newProjectAddress').value = '';
+  save();
+  switchView('overview');
+}
+
+function selectProject(id){
+  currentProjectId = id;
+  save();
+  switchView('overview');
+}
+
+function duplicateProject(id){
+  const p = projects.find(x => x.id === id);
+  if(!p) return;
+  const copy = JSON.parse(JSON.stringify(p));
+  copy.id = 'p' + Date.now();
+  copy.name = p.name + '（複製）';
+  copy.created = new Date().toLocaleString('ja-JP');
+  copy.updated = new Date().toLocaleString('ja-JP');
+  projects.unshift(copy);
+  save();
+  render();
+}
+
+function deleteProject(id){
+  const p = projects.find(x => x.id === id);
+  if(!p) return;
+  showModal(
+    '案件を削除しますか？',
+    '「' + p.name + '」を削除します。この操作は元に戻せません。',
+    ()=>{
+      projects = projects.filter(x => x.id !== id);
+      if(currentProjectId === id) currentProjectId = null;
+      save();
+      render();
+    }
+  );
+}
+
+/* 部屋 */
+function addRoom(){
+  const p = currentProject();
+  if(!p){ alert('先に案件を選択してください'); return; }
+  const name = document.getElementById('newRoomName').value.trim();
+  if(!name){ alert('部屋名を入力してください'); return; }
+  p.rooms.push({
+    id: 'r' + Date.now(),
+    name,
+    width: 0,
+    depth: 0,
+    height: 2.4,
+    floor: 0,
+    wall: 0,
+    ceiling: 0
+  });
+  document.getElementById('newRoomName').value = '';
+  save();
+  render();
+}
+
+function updateRoom(id, field, value){
+  const p = currentProject();
+  const room = p.rooms.find(r => r.id === id);
+  if(!room) return;
+  room[field] = Number(value) || 0;
+  const w = room.width, d = room.depth, h = room.height;
+  room.floor = w * d;
+  room.ceiling = w * d;
+  room.wall = 2 * (w + d) * h;
+  save();
+  render();
+}
+
+function deleteRoom(id){
+  const p = currentProject();
+  showModal(
+    '部屋を削除しますか？',
+    'この部屋と、関連する見積明細は削除されません。',
+    ()=>{
+      p.rooms = p.rooms.filter(r => r.id !== id);
+      save();
+      render();
+    }
+  );
+}
+
+/* 明細 */
+function addItem(){
+  const p = currentProject();
+  if(!p){ alert('先に案件を選択してください'); return; }
+  const roomId = document.getElementById('itemRoom').value;
+  const category = document.getElementById('itemCategory').value;
+  const name = document.getElementById('itemName').value.trim();
+  const qty = Number(document.getElementById('itemQty').value) || 0;
+  const price = Number(document.getElementById('itemPrice').value) || 0;
+  const unit = document.getElementById('itemUnit').value;
+  if(!name){ alert('項目名を入力してください'); return; }
+  if(qty <= 0){ alert('数量を入力してください'); return; }
+  p.items.push({
+    id: 'i' + Date.now(),
+    roomId,
+    category,
+    name,
+    qty,
+    price,
+    unit,
+    editing: false
+  });
+  document.getElementById('itemName').value = '';
+  document.getElementById('itemQty').value = '1';
+  document.getElementById('itemPrice').value = '0';
+  save();
+  render();
+}
+
+function editItem(id){
+  const p = currentProject();
+  p.items.forEach(i => i.editing = (i.id === id ? !i.editing : false));
+  save();
+  render();
+}
+
+function updateItem(id, field, value){
+  const p = currentProject();
+  const item = p.items.find(i => i.id === id);
+  if(!item) return;
+  item[field] = field === 'name' ? value : (Number(value) || 0);
+  save();
+  render();
+}
+
+function deleteItem(id){
+  const p = currentProject();
+  showModal(
+    '明細を削除しますか？',
+    'この見積明細を削除します。この操作は元に戻せません。',
+    ()=>{
+      p.items = p.items.filter(i => i.id !== id);
+      save();
+      render();
+    }
+  );
+}
+
+/* 設定 */
+function saveSettings(){
+  const p = currentProject();
+  if(!p) return;
+  p.taxRate = Number(document.getElementById('taxRate').value) || 0;
+  p.markupRate = Number(document.getElementById('markupRate').value) || 0;
+  p.note = document.getElementById('projectNote').value;
+  save();
+  render();
+}
+
+/* 図面 */
+function loadDrawing(event){
+  const file = event.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const text = e.target.result;
+    drawingImage = {
+      name: file.name,
+      text,
+      lines: [],
+      texts: [],
+      loadedAt: new Date().toLocaleString('ja-JP')
+    };
+    parseJWWLike(text);
+    document.getElementById('drawingStatus').textContent =
+      '読み込み完了：' + file.name + '／' + drawingImage.lines.length + '線分を検出';
+    drawCanvas();
+  };
+  reader.readAsText(file, 'Shift_JIS');
+}
+
+function parseJWWLike(text){
+  drawingImage.lines = [];
+  drawingImage.texts = [];
+  const lines = text.split(/\r?\n/);
+  lines.forEach(line=>{
+    const parts = line.split(/\s+/).filter(Boolean);
+    if(parts.length >= 4 && !isNaN(parseFloat(parts[0]))){
+      drawingImage.lines.push(parts.map(Number));
+    } else if(line.trim()){
+      drawingImage.texts.push(line.trim());
+    }
+  });
+}
+
+function setDrawMode(mode){
+  drawMode = mode;
+  measurePoints = [];
+  const names = {
+    measure: '長さ計測',
+    demolition: '壁解体',
+    cutter: '土間カッター',
+    electric: '電気器具配置'
+  };
+  document.getElementById('drawModeText').textContent = '現在のモード：' + names[mode];
+}
+
+function clearDrawing(){
+  drawingImage = null;
+  drawMode = 'none';
+  measurePoints = [];
+  document.getElementById('drawingStatus').textContent = '未読み込み';
+  document.getElementById('measureResult').textContent = '計測なし';
+  drawCanvas();
+}
+
+function drawCanvas(){
+  const canvas = document.getElementById('drawingCanvas');
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+  if(!drawingImage){
+    ctx.fillStyle = '#5b6472';
+    ctx.font = '16px sans-serif';
+    ctx.fillText('JWWファイルを読み込んでください', 40, 300);
+    return;
+  }
+  ctx.strokeStyle = '#111827';
+  ctx.lineWidth = 2;
+  drawingImage.lines.forEach(l=>{
+    if(l.length >= 4){
+      ctx.beginPath();
+      ctx.moveTo(l[0], l[1]);
+      ctx.lineTo(l[2], l[3]);
+      ctx.stroke();
+    }
+  });
+  ctx.fillStyle = '#111827';
+  ctx.font = '14px sans-serif';
+  drawingImage.texts.slice(0,30).forEach((t,i)=>{
+    ctx.fillText(t, 20, 30 + i * 18);
+  });
+}
+
+document.getElementById('drawingCanvas').addEventListener('click', e=>{
+  if(!drawingImage) return;
+  const rect = e.target.getBoundingClientRect();
+  const x = (e.clientX - rect.left) * (e.target.width / rect.width);
+  const y = (e.clientY - rect.top) * (e.target.height / rect.height);
+  if(drawMode === 'measure'){
+    measurePoints.push({x,y});
+    if(measurePoints.length === 2){
+      const dx = measurePoints[1].x - measurePoints[0].x;
+      const dy = measurePoints[1].y - measurePoints[0].y;
+      const length = Math.sqrt(dx*dx + dy*dy);
+      document.getElementById('measureResult').textContent =
+        '計測長さ：' + length.toFixed(1) + 'px（図面縮尺を確認してください）';
+      measurePoints = [];
+    }
+  }
+});
+
+/* 出力 */
+function exportPDF(){
+  const p = currentProject();
+  if(!p){ alert('先に案件を選択してください'); return; }
+  const w = window.open('', '_blank');
+  if(!w){ alert('ポップアップがブロックされています'); return; }
+  const rows = p.items.map(i=>{
+    const room = p.rooms.find(r => r.id === i.roomId);
+    return '<tr>' +
+      '<td>' + (room ? room.name : '-') + '</td>' +
+      '<td>' + i.name + '</td>' +
+      '<td style="text-align:right">' + i.qty + i.unit + '</td>' +
+      '<td style="text-align:right">' + money(i.price) + '</td>' +
+      '<td style="text-align:right">' + money(i.qty * i.price) + '</td>' +
+      '</tr>';
+  }).join('');
+  const total = p.items.reduce((s,i)=>s+i.qty*i.price,0);
+  const tax = total * p.taxRate / 100;
+  w.document.write(`
+    <html><head><meta charset="utf-8"><title>見積書</title>
+    <style>
+      body{font-family:sans-serif;padding:24px;color:#111}
+      h1{font-size:22px;margin:0 0 4px}
+      table{width:100%;border-collapse:collapse;margin-top:16px}
+      th,td{border:1px solid #ccc;padding:8px;font-size:13px}
+      th{background:#f2f4f7}
+      .total{font-size:20px;font-weight:bold;text-align:right;margin-top:14px}
+    </style></head><body>
+    <h1>見積書</h1>
+    <div>案件名：${p.name}</div>
+    <div>住所：${p.address || '-'}</div>
+    <div>作成日：${new Date().toLocaleDateString('ja-JP')}</div>
+    <table>
+      <tr><th>部屋</th><th>項目</th><th>数量</th><th>単価</th><th>金額</th></tr>
+      ${rows}
+    </table>
+    <div class="total">小計：${money(total)}</div>
+    <div class="total">消費税：${money(tax)}</div>
+    <div class="total">合計：${money(total + tax)}</div>
+    <p>${p.note || ''}</p>
+  </body></html>`);
+  w.document.close();
+  w.print();
+}
+
+function exportCSV(){
+  const p = currentProject();
+  if(!p){ alert('先に案件を選択してください'); return; }
+  let csv = '部屋,工事種別,項目名,数量,単位,単価,金額\n';
+  p.items.forEach(i=>{
+    const room = p.rooms.find(r => r.id === i.roomId);
+    const category = {
+      demolition:'解体', base:'下地', finish:'仕上げ', electric:'電気器具'
+    }[i.category];
+    csv += [
+      room ? room.name : '',
+      category,
+      '"' + i.name + '"',
+      i.qty,
+      i.unit,
+      i.price,
+      i.qty * i.price
+    ].join(',') + '\n';
+  });
+  const blob = new Blob(['\ufeff' + csv], {type:'text/csv;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = (p.name || 'ぷろろん') + '_見積明細.csv';
+  a.click();
+}
+
+/* 描画 */
+function render(){
+  const p = currentProject();
+  document.querySelectorAll('.tab').forEach(t=>{
+    t.classList.toggle('active', t.dataset.view === getView());
+  });
+  renderProjects();
+  renderRooms();
+  renderItems();
+  renderSettings();
+  drawCanvas();
+}
+
+function getView(){
+  const active = document.querySelector('.tab.active');
+  return active ? active.dataset.view : 'projects';
+}
+
+function renderProjects(){
+  const box = document.getElementById('projectList');
+  if(!projects.length){
+    box.innerHTML = '<div class="empty">案件がありません。上から作成してください。</div>';
+    return;
+  }
+  box.innerHTML = projects.map(p=>{
+    const total = p.items.reduce((s,i)=>s+i.qty*i.price,0);
+    return `
+      <div class="project-card ${p.id === currentProjectId ? 'active' : ''}">
+        <div class="project-name">${p.name}</div>
+        <div class="project-meta">${p.address || '住所未設定'}｜更新 ${p.updated}</div>
+        <div class="project-meta">見積合計 ${money(total)}｜明細 ${p.items.length}件</div>
+        <div class="project-actions">
+          <button class="btn primary small" onclick="selectProject('${p.id}')">開く</button>
+          <button class="btn small" onclick="duplicateProject('${p.id}')">複製</button>
+          <button class="btn danger small" onclick="deleteProject('${p.id}')">削除</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderRooms(){
+  const p = currentProject();
+  const box = document.getElementById('roomList');
+  if(!p){
+    box.innerHTML = '<div class="empty">案件を選択してください。</div>';
+    return;
+  }
+  if(!p.rooms.length){
+    box.innerHTML = '<div class="empty">部屋を追加してください。</div>';
+  } else {
+    box.innerHTML = p.rooms.map(r=>`
+      <div class="room-card">
+        <div class="row">
+          <div class="grow">
+            <div class="room-title">${r.name}</div>
+          </div>
+          <button class="btn danger small" onclick="deleteRoom('${r.id}')">削除</button>
+        </div>
+        <div class="grid3">
+          <div>
+            <label>幅 m</label>
+            <input type="number" inputmode="decimal" value="${r.width}" oninput="updateRoom('${r.id}','width',this.value)">
+          </div>
+          <div>
+            <label>奥行 m</label>
+            <input type="number" inputmode="decimal" value="${r.depth}" oninput="updateRoom('${r.id}','depth',this.value)">
+          </div>
+          <div>
+            <label>高さ m</label>
+            <input type="number" inputmode="decimal" value="${r.height}" oninput="updateRoom('${r.id}','height',this.value)">
+          </div>
+        </div>
+        <div class="qty-grid">
+          <div class="qty-box">
+            <div class="qty-label">床</div>
+            <div class="qty-value">${r.floor.toFixed(2)}㎡</div>
+          </div>
+          <div class="qty-box">
+            <div class="qty-label">壁</div>
+            <div class="qty-value">${r.wall.toFixed(2)}㎡</div>
+          </div>
+          <div class="qty-box">
+            <div class="qty-label">天井</div>
+            <div class="qty-value">${r.ceiling.toFixed(2)}㎡</div>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+  const total = p.items.reduce((s,i)=>s+i.qty*i.price,0);
+  document.getElementById('overviewTotal').textContent = money(total);
+  document.getElementById('overviewMeta').textContent =
+    '税抜表示・明細' + p.items.length + '件';
+}
+
+function renderItems(){
+  const p = currentProject();
+  const roomSelect = document.getElementById('itemRoom');
+  const box = document.getElementById('itemList');
+  if(!p){
+    roomSelect.innerHTML = '<option>案件を選択してください</option>';
+    box.innerHTML = '<div class="empty">案件を選択してください。</div>';
+    return;
+  }
+  roomSelect.innerHTML = p.rooms.length
+    ? p.rooms.map(r=>`<option value="${r.id}">${r.name}</option>`).join('')
+    : '<option value="">部屋を追加してください</option>';
+
+  if(!p.items.length){
+    box.innerHTML = '<div class="empty">見積明細がありません。</div>';
+  } else {
+    box.innerHTML = p.items.map(i=>{
+      const room = p.rooms.find(r => r.id === i.roomId);
+      const tag = {
+        demolition:'<span class="tag demolition">解体</span>',
+        base:'<span class="tag base">下地</span>',
+        finish:'<span class="tag finish">仕上げ</span>',
+        electric:'<span class="tag electric">電気器具</span>'
+      }[i.category];
+      return `
+        <div class="item-card ${i.editing ? 'editing' : ''}">
+          <div class="item-top">
+            <div class="grow">
+              <div class="item-name">${i.name}</div>
+              <div class="item-meta">${tag}${room ? room.name : '部屋未設定'}｜${i.qty}${i.unit}</div>
+            </div>
+            <div class="item-price">${money(i.qty * i.price)}</div>
+          </div>
+          ${i.editing ? `
+            <div class="grid2" style="margin-top:10px">
+              <div>
+                <label>数量</label>
+                <input type="number" inputmode="decimal" value="${i.qty}" oninput="updateItem('${i.id}','qty',this.value)">
+              </div>
+              <div>
+                <label>単価</label>
+                <input type="number" inputmode="numeric" value="${i.price}" oninput="updateItem('${i.id}','price',this.value)">
+              </div>
+            </div>
+          ` : ''}
+          <div class="actions">
+            <button class="btn small" onclick="editItem('${i.id}')">${i.editing ? '閉じる' : '編集'}</button>
+            <button class="btn danger small" onclick="deleteItem('${i.id}')">削除</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+  const total = p.items.reduce((s,i)=>s+i.qty*i.price,0);
+  document.getElementById('estimateTotal').textContent = money(total);
+  document.getElementById('estimateMeta').textContent =
+    '税抜表示・明細' + p.items.length + '件';
+}
+
+function renderSettings(){
+  const p = currentProject();
+  if(!p) return;
+  document.getElementById('taxRate').value = p.taxRate;
+  document.getElementById('markupRate').value = p.markupRate;
+  document.getElementById('projectNote').value = p.note || '';
+  const sales = p.items.reduce((s,i)=>s+i.qty*i.price,0);
+  const cost = sales / (1 + p.markupRate / 100);
+  const profit = sales - cost;
+  document.getElementById('salesAmount').textContent = money(sales);
+  document.getElementById('costAmount').textContent = money(cost);
+  document.getElementById('profitAmount').textContent = money(profit);
+}
+
+/* モーダル */
+let modalAction = null;
+function showModal(title, body, action){
+  document.getElementById('modalTitle').textContent = title;
+  document.getElementById('modalBody').textContent = body;
+  modalAction = action;
+  document.getElementById('modalBack').classList.add('show');
+}
+function closeModal(){
+  document.getElementById('modalBack').classList.remove('show');
+  modalAction = null;
+}
+document.getElementById('modalOk').onclick = ()=>{
+  if(modalAction) modalAction();
+  closeModal();
+};
+
+document.querySelectorAll('.tab').forEach(t=>{
+  t.onclick = ()=>switchView(t.dataset.view);
+});
+
+render();
+save();
+</script>
+</body>
+</html>
